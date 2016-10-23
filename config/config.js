@@ -7,16 +7,20 @@ var config = {
                    root: rootPath,    
                    app: {      name: 'Chirps'    },    
                    port: 5000,  
+                   db: 'mongodb://127.0.0.1/chirp-dev'
         },  
          test: {
     root: rootPath,
     app: {      name: 'Chirps'    },
     port: 5000,
+    db: 'mongodb://127.0.0.1/chirp-test'
  },
         production: {    
                      root: rootPath,    
                      app: {      name: 'Chirps'    },    
-                      port: 80,  }
+                      port: 80,
+                      db: 'mongodb://127.0.0.1/chirp'
+                      }
          };
 
 module.exports = config[env];
