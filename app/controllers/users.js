@@ -80,43 +80,10 @@ module.exports = function (app) {
 				});
 		})
 
-		//		.get(function (req, res) {
-		//			logger.log("Get a users", "verbose");
-		//			res.status(200).json({ msg: "GET a user" });
-		//		})
-
-		.delete(function (req, res, next) {
-			logger.log('Delete User ' + req.params.id, 'verbose');
-			var query = User.remove({ _id: req.params.id })
-				.exec()
-				.then(function (result) {
-					res.status(204).json({ message: 'Record deleted' });
-				})
-				.catch(function (err) {
-					return next(err);
-				});
+		.get(function (req, res) {
+			logger.log("Get a users", "verbose");
+			res.status(200).json({ msg: "GET a user" });
 		})
-
-	// .delete(function (req, res) {
-	// 	logger.log("Delete a user", "verbose");
-	// 	res.status(200).json({ msg: "Delete a user" });
-	// });
-
-	router.route('/users/screenName/:name')
-
-		.get(function (req, res) {
-			logger.log("Get a user based on screen name", "verbose");
-			res.status(200).json({ msg: "Get a user based on screen name" });
-		});
-
-	router.route('/users/followedChirps/:id')
-
-		.get(function (req, res) {
-			logger.log("Get the chirps of the users a user follows", "verbose");
-			res.status(200).json({ msg: "Get the chirps of the users a user follows" });
-		});
-
-	router.route('/users/follow/:id')
 
 		.put(function (req, res, next) {
 			logger.log('Update User ' + req.params.id, 'verbose');
@@ -152,6 +119,94 @@ module.exports = function (app) {
 						});
 				})
 		})
+
+		.delete(function (req, res, next) {
+			logger.log('Delete User ' + req.params.id, 'verbose');
+			var query = User.remove({ _id: req.params.id })
+				.exec()
+				.then(function (result) {
+					res.status(204).json({ message: 'Record deleted' });
+				})
+				.catch(function (err) {
+					return next(err);
+				});
+		})
+
+	// .delete(function (req, res) {
+	// 	logger.log("Delete a user", "verbose");
+	// 	res.status(200).json({ msg: "Delete a user" });
+	// });
+
+	router.route('/users/screenName/:name')
+
+		//More Web Services
+		.get(function (req, res, next) {
+			logger.log('Get User ' + req.params.id, 'verbose');
+			User.findOne({ screenName: req.params.name }).exec()
+				.then(function (user) {
+					res.status(200).json(user);
+				})
+				.catch(function (err) {
+					return next(err);
+				});
+		});
+
+
+	// 	.get(function (req, res) {
+	// 	logger.log("Get a user based on screen name", "verbose");
+	// 	res.status(200).json({ msg: "Get a user based on screen name" });
+	// });
+
+	router.route('/users/followedChirps/:id')
+
+		//More Web Services
+		.get(function (req, res, next) {
+			logger.log('Get Users followed chirps ' + req.params.id, 'verbose');
+			User.findOne({ _id: req.params.id })
+				.then(function (user) {
+					Chirp.find({ $or: [{ chirpAuthor: user._id }, { chirpAuthor: { $in: user.follow } }] })
+						.populate('screenName')
+						.sort('-dateCreated')
+						.exec()
+						.then(function (chirps) {
+							res.status(200).json(chirps);
+						})
+				})
+				.catch(function (err) {
+					return next(error);
+				});
+		});
+
+
+	// 	.get(function (req, res) {
+	// 	logger.log("Get the chirps of the users a user follows", "verbose");
+	// 	res.status(200).json({ msg: "Get the chirps of the users a user follows" });
+	// });
+
+	router.route('/users/follow/:id')
+
+		//More Web Services
+		.put(function (req, res, next) {
+			logger.log('Update User ' + req.params.id, 'verbose');
+			User.findOne({ _id: req.params.id }).exec()
+				.then(function (user) {
+					if (user.follow.indexOf(req.body._id) == -1) {
+						user.follow.push(req.body._id);
+						user.save()
+							.then(function (user) {
+								res.status(200).json(user);
+							})
+							.catch(function (err) {
+								return next(error);
+							});
+					}
+				})
+				.catch(function (err) {
+					return next(err);
+				});
+		});
+
+
 
 	// .put(function (req, res) {
 	// 	logger.log("Follow a user", "verbose");

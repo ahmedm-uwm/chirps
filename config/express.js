@@ -3,8 +3,7 @@ var express = require('express'),
     logger = require('./logger');
     glob = require('glob');
     mongoose = require('mongoose');
-   
-   
+      
 module.exports = function (app, config) {
 
 bodyParser = require('body-parser');
@@ -54,7 +53,7 @@ var models = glob.sync(config.root + '/app/models/*.js');
   });
 
   app.use(function (err, req, res, next) {
-    console.error(err.stack);
+    if (process.env.NODE_ENV !== 'test') logger.log(err.stack, 'error');
     res.type('text/plan');
     res.status(500);
     res.send('500 Sever Error');
