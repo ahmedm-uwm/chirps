@@ -3,6 +3,11 @@ var express = require('express'),
 	router = express.Router()
 	mongoose = require('mongoose'),
 	Chirp = mongoose.model('Chirp');
+//Authentication
+passportService = require('../../config/passport')
+passport = require('passport')
+var requireAuth = passport.authenticate('jwt', { session: false });
+//End Authentication
 
 module.exports = function (app) {
 	app.use('/api', router);
@@ -10,7 +15,7 @@ module.exports = function (app) {
 	router.route('/chirps')
 
 		//More Web Services
-		.post(function (req, res, next) {
+		.post(requireAuth, function (req, res, next) {
 			logger.log('Create Chirp', 'verbose');
 			var chirp = new Chirp(req.body);
 			chirp.save()
@@ -22,7 +27,7 @@ module.exports = function (app) {
 				});
 		})
 
-		.get(function (req, res) {
+		.get(requireAuth, function (req, res) {
 			logger.log("Get all chirps", "verbose");
 			res.status(200).json({ msg: "Get all chirps" });
 		})
@@ -32,19 +37,19 @@ module.exports = function (app) {
 		// 	res.status(201).json({msg: "Create a chirps"});
 		// })
 
-		.put(function (req, res) {
+		.put(requireAuth, function (req, res) {
 			logger.log("Update a chirps", "verbose");
 			res.status(201).json({ msg: "Update a chirps" });
 		});
 
 	router.route('/chirps/:id')
 
-		.get(function (req, res) {
+		.get(requireAuth, function (req, res) {
 			logger.log("Get a chirps", "verbose");
 			res.status(200).json({ msg: "Get a chirps" });
 		})
 
-		.delete(function (req, res) {
+		.delete(requireAuth, function (req, res) {
 			logger.log("Delete a chirps", "verbose");
 			res.status(200).json({ msg: "Delete a chirps" });
 		});
@@ -52,7 +57,7 @@ module.exports = function (app) {
 	router.route('/chirps/userChirps/:id')
 
 		//More Web Services
-		.get(function (req, res, next) {
+		.get(requireAuth, function (req, res, next) {
 			logger.log('Get User Chirps ' + req.params.id, 'verbose');
 			Chirp.find({ chirpAuthor: req.params.id })
 				.populate('chirpAuthor')
@@ -75,7 +80,7 @@ module.exports = function (app) {
 	router.route('/chirps/like/:id')
 
 		//More Web Services
-		.put(function (req, res, next) {
+		.put(requireAuth, function (req, res, next) {
 			logger.log('Update Chirp ' + req.params.id, 'debug');
 			Chirp.findOne({ _id: req.params.id }).exec()
 				.then(function (chirp) {

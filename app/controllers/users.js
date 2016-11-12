@@ -3,6 +3,14 @@ var express = require('express'),
 	router = express.Router()
 mongoose = require('mongoose')
 User = mongoose.model('User')
+passportService = require('../../config/passport')
+passport = require('passport')
+var requireAuth = passport.authenticate('jwt', { session: false });
+var requireLogin = passport.authenticate('local', { session: false });
+
+
+router.route('/users/login').post(requireLogin, login);
+
 
 
 module.exports = function (app) {
@@ -10,7 +18,7 @@ module.exports = function (app) {
 
 	router.route('/users')
 
-		.get(function (req, res, next) {
+		.get(requireAuth, function (req, res, next) {
 			logger.log('Get User', 'verbose');
 			var query = User.find()
 				.sort(req.query.order)
@@ -46,7 +54,7 @@ module.exports = function (app) {
 		//			res.status(201).json({ msg: "Create a user" });
 		//		})
 
-		.put(function (req, res, next) {
+		.put(requireAuth, function (req, res, next) {
 			logger.log('Update User ' + req.params.id, 'verbose');
 			var query = User.findOneAndUpdate(
 				{ _id: req.body._id },
@@ -68,7 +76,7 @@ module.exports = function (app) {
 
 	router.route('/users/:id')
 
-		.get(function (req, res, next) {
+		.get(requireAuth, function (req, res, next) {
 			logger.log('Get User ' + req.params.id, 'verbose');
 			var query = User.findById(req.params.id)
 				.exec()
@@ -80,12 +88,12 @@ module.exports = function (app) {
 				});
 		})
 
-		.get(function (req, res) {
+		.get(requireAuth, function (req, res) {
 			logger.log("Get a users", "verbose");
 			res.status(200).json({ msg: "GET a user" });
 		})
 
-		.put(function (req, res, next) {
+		.put(requireAuth, function (req, res, next) {
 			logger.log('Update User ' + req.params.id, 'verbose');
 			var query = User.findById(req.params.id)
 				.exec()
@@ -120,7 +128,7 @@ module.exports = function (app) {
 				})
 		})
 
-		.delete(function (req, res, next) {
+		.delete(requireAuth, function (req, res, next) {
 			logger.log('Delete User ' + req.params.id, 'verbose');
 			var query = User.remove({ _id: req.params.id })
 				.exec()
@@ -140,7 +148,7 @@ module.exports = function (app) {
 	router.route('/users/screenName/:name')
 
 		//More Web Services
-		.get(function (req, res, next) {
+		.get(requireAuth, function (req, res, next) {
 			logger.log('Get User ' + req.params.id, 'verbose');
 			User.findOne({ screenName: req.params.name }).exec()
 				.then(function (user) {
@@ -160,7 +168,7 @@ module.exports = function (app) {
 	router.route('/users/followedChirps/:id')
 
 		//More Web Services
-		.get(function (req, res, next) {
+		.get(requireAuth, function (req, res, next) {
 			logger.log('Get Users followed chirps ' + req.params.id, 'verbose');
 			User.findOne({ _id: req.params.id })
 				.then(function (user) {
@@ -186,7 +194,7 @@ module.exports = function (app) {
 	router.route('/users/follow/:id')
 
 		//More Web Services
-		.put(function (req, res, next) {
+		.put(requireAuth, function (req, res, next) {
 			logger.log('Update User ' + req.params.id, 'verbose');
 			User.findOne({ _id: req.params.id }).exec()
 				.then(function (user) {
