@@ -2,7 +2,7 @@
     <div class='container'>
         <div class="well col-md-3">
             <form id="form">
-                <div id="errorMsg"></div>
+                <div id="errorMsg" innerhtml.bind="loginError"></div>
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input value.bind="email" type="email" autofocus class="form-control"  id="email" placeholder="Email"></input>

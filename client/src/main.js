@@ -1,4 +1,5 @@
 import environment from './environment';
+import config from './auth-config';
 
 //Configure Bluebird Promises.
 Promise.config({
@@ -11,6 +12,9 @@ Promise.config({
 export function configure(aurelia) {
   aurelia.use
     .standardConfiguration()
+    .plugin('aurelia-auth', (baseConfig)=>{
+         baseConfig.configure(config);
+    })
     .feature('resources');
 
   if (environment.debug) {
