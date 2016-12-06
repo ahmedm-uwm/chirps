@@ -1,0 +1,27 @@
+.topMargin{
+    margin-top: 20px;
+}
+
+@keyframes example {
+     from {color: blue;}
+     to {color: red;}
+}
+
+@keyframes example2 {
+     from {color: red;}
+     to {color: blue;}
+}
+
+.color{
+    color: white;
+    background-color: black;
+    animation-name: example;
+    animation-duration: 4s;
+}
+
+.wallpanel{
+    color: white;
+    background-color: black;
+    animation-name: example2;
+    animation-duration: 4s;
+}

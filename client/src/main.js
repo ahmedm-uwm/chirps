@@ -1,5 +1,7 @@
 import environment from './environment';
 import config from './auth-config';
+import regeneratorRuntime from 'regenerator-runtime';
+window.regeneratorRuntime = regeneratorRuntime;
 
 //Configure Bluebird Promises.
 Promise.config({
@@ -12,6 +14,7 @@ Promise.config({
 export function configure(aurelia) {
   aurelia.use
     .standardConfiguration()
+    .plugin('aurelia-validation')
     .plugin('aurelia-auth', (baseConfig)=>{
          baseConfig.configure(config);
     })

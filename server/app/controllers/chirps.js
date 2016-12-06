@@ -101,4 +101,27 @@ module.exports = function (app) {
 	// 	res.status(201).json({ msg: "Like a chirp" });
 	// });
 
+	router.route('/chirps/followedChirps/:id')
+
+		//More Web Services
+
+		.get(requireAuth, function (req, res, next) {
+			logger.log('Get Users followed chirps ' + req.params.id, 'debug');
+			User.findOne({ _id: req.params.id }, function (err, user) {
+				if (!err) {
+					Chirp.find({
+						$or: [
+							{ chirpAuthor: user._id }, { chirpAuthor: { $in: user.follow } }
+						]
+					}).populate('chirpAuthor').sort({ dateSubmitted: -1 }).exec(function (err, chirps) {
+						if (!err) {
+							res.status(200).json(chirps);
+						} else {
+							res.status(403).json({ message: "Forbidden" });
+						}
+					});
+				}
+			});
+		});
+
 }
